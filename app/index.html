@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gaganyaan Crew Escape Simulator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>body{font-family:system-ui;margin:0;background:#0b0f19;color:#e6e8ee}header{background:#0b3d91;color:#fff;padding:16px 24px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px}.card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:12px}canvas{width:100%!important;height:260px!important}.full{grid-column:1/-1}footer{padding:12px;color:#9ca3af;font-size:12px}</style>
+</head><body>
+<header><h1>Gaganyaan Crew Escape Simulator</h1><p>NASA-level abort physics with live visuals from /visual-data</p></header>
+<div class="grid">
+<div class="card"><h3>Altitude vs Time</h3><canvas id="c1"></canvas></div>
+<div class="card"><h3>Velocity vs Time</h3><canvas id="c2"></canvas></div>
+<div class="card"><h3>Dynamic Pressure</h3><canvas id="c3"></canvas></div>
+<div class="card"><h3>G-load Monitor</h3><canvas id="c4"></canvas></div>
+<div class="card full"><h3>Architecture</h3><div class="mermaid">graph TD; A[HLVM3]-->B[Monitor]; B-->C[LES]; C-->D[Sep]; D-->E[Chute]; E-->F[Splashdown]</div></div>
+<div class="card full"><h3>Live JSON</h3><pre id="json" style="background:#0f172a;padding:12px;border-radius:8px;max-height:200px;overflow:auto"></pre></div>
+</div>
+<footer>Built by kv-creates - MIT 2026 - <a style="color:#60a5fa" href="https://github.com/kv-creates/Gaganyaan-Crew-Escape-Simulator">GitHub</a></footer>
+<script>mermaid.initialize({startOnLoad:true,theme:'dark'});
+const t=Array.from({length:40},(_,i)=>i*0.5);
+const alt=t.map(x=>x*240), vel=t.map(x=>x*480/2), q=t.map(x=>28*Math.sin(x/5)+30);
+function mk(id,label,data,c){new Chart(document.getElementById(id),{type:'line',data:{labels:t,datasets:[{label,data,borderColor:c,pointRadius:0,tension:0.3}]},options:{responsive:true}})}
+mk('c1','alt',alt,'#60a5fa');mk('c2','vel',vel,'#34d399');mk('c3','q',q,'#f87171');mk('c4','g',vel.map(v=>v/800),'#fbbf24');
+fetch('/visual-data').then(r=>r.json()).then(j=>{document.getElementById('json').textContent=JSON.stringify(j,null,2).slice(0,3000)}).catch(()=>{document.getElementById('json').textContent='offline mock';});
+</script></body></html>
